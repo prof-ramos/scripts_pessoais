@@ -1,0 +1,71 @@
+# ============================================================================
+# .gitignore - Scripts Pessoais
+# ============================================================================
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Backups
+*.backup
+*.backup-*
+*.bak
+*~
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+*.swn
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Credenciais e segredos
+.env
+.env.local
+.env.*.local
+secrets/
+*.secret
+credentials/
+*.key
+*.pem
+
+# Diretórios de cache
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Node modules (se usar Node.js)
+node_modules/
+
+# Arquivos específicos do macOS
+*.DS_Store
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+Thumbs.db
+
+# Arquivos de IDE
+.vscode/
+.idea/
+*.iml
+
+# Arquivos de teste
+test_output/
+*.test
+
+# Diretório de logs local
+.local/logs/*.log

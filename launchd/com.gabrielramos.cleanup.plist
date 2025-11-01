@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Identificador único do agente -->
+    <key>Label</key>
+    <string>com.gabrielramos.cleanup</string>
+
+    <!-- Caminho completo do script -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>/Users/gabrielramos/scripts_pessoais/scripts/cleanup/daily-cleanup.sh</string>
+    </array>
+
+    <!-- Executar 2x por dia: 10h e 18h -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <!-- Execução às 10:00 -->
+        <dict>
+            <key>Hour</key>
+            <integer>10</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <!-- Execução às 18:00 -->
+        <dict>
+            <key>Hour</key>
+            <integer>18</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+    </array>
+
+    <!-- Diretório de trabalho -->
+    <key>WorkingDirectory</key>
+    <string>/Users/gabrielramos/scripts_pessoais</string>
+
+    <!-- Logs de saída -->
+    <key>StandardOutPath</key>
+    <string>/Users/gabrielramos/.local/logs/cleanup-stdout.log</string>
+
+    <!-- Logs de erro -->
+    <key>StandardErrorPath</key>
+    <string>/Users/gabrielramos/.local/logs/cleanup-stderr.log</string>
+
+    <!-- Executar mesmo quando sem login (background) -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Manter agente ativo -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Nice level (prioridade baixa para não interferir) -->
+    <key>Nice</key>
+    <integer>10</integer>
+
+    <!-- Variáveis de ambiente -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>

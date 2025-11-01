@@ -1,7 +1,29 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(zsh:*)",
+      "Bash(brew install:*)",
+      "Bash(cat:*)",
+      "Bash(git -C /Users/gabrielramos/scripts_pessoais log --oneline -10)",
+      "Bash(git -C /Users/gabrielramos/scripts_pessoais remote:*)",
+      "Bash(test:*)",
+      "Bash(git -C /Users/gabrielramos/scripts_pessoais ls-files:*)",
+      "Bash(chmod:*)",
+      "Bash(tree:*)",
+      "Bash(source ~/.zshrc)",
+      "Bash(fnm:*)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(README.md)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(./scripts/install-agents.sh:*)",
+      "Bash(/Users/gabrielramos/scripts_pessoais/install-iterm-themes.sh)",
+      "Bash(rm:*)",
+      "Bash(./scripts/dotfiles/sync-dotfiles.sh:*)",
+      "Bash(./install-iterm-themes.sh:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

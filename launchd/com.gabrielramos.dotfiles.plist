@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Identificador único do agente -->
+    <key>Label</key>
+    <string>com.gabrielramos.dotfiles</string>
+
+    <!-- Caminho completo do script -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>/Users/gabrielramos/scripts_pessoais/scripts/dotfiles/sync-dotfiles.sh</string>
+    </array>
+
+    <!-- Executar 1x por dia: 20h -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>20</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Diretório de trabalho -->
+    <key>WorkingDirectory</key>
+    <string>/Users/gabrielramos/scripts_pessoais</string>
+
+    <!-- Logs de saída -->
+    <key>StandardOutPath</key>
+    <string>/Users/gabrielramos/.local/logs/dotfiles-stdout.log</string>
+
+    <!-- Logs de erro -->
+    <key>StandardErrorPath</key>
+    <string>/Users/gabrielramos/.local/logs/dotfiles-stderr.log</string>
+
+    <!-- Executar ao carregar (para teste inicial) -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Manter agente ativo -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Nice level (prioridade baixa) -->
+    <key>Nice</key>
+    <integer>10</integer>
+
+    <!-- Variáveis de ambiente -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
