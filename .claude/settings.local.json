@@ -23,7 +23,16 @@
       "Bash(rm:*)",
       "Bash(./scripts/dotfiles/sync-dotfiles.sh:*)",
       "Bash(./install-iterm-themes.sh:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pkill:*)",
+      "Bash(launchctl:*)",
+      "Bash(tail:*)",
+      "Bash(zsh -n:*)",
+      "Bash(bash -n:*)",
+      "Bash(docker system prune:*)",
+      "Bash(df:*)",
+      "Bash(ps:*)",
+      "Bash(./scripts/cleanup/daily-cleanup.sh:*)"
     ],
     "deny": [],
     "ask": []
