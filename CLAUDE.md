@@ -1,195 +1,372 @@
-# CLAUDE.md
+# CLAUDE.md - Scripts Pessoais de Automação macOS
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Este arquivo fornece orientações para o Claude Code ao trabalhar neste repositório de scripts de automação para macOS.
 
-## Propósito do Repositório
+## Contexto do Projeto
 
-Este repositório contém scripts pessoais para automação de tarefas rotineiras e repetitivas no macOS. O foco é em scripts que automatizam:
+Este é um repositório de **scripts pessoais de automação** para macOS que elimina tarefas repetitivas do dia a dia usando:
 
-1. **Limpeza diária**: Scripts que executam 2x por dia (inspirado em https://github.com/tw93/Mole.git)
-2. **Atualização de dotfiles**: Manutenção automática de configurações do sistema
+- **Linguagens**: Zsh (scripts principais), Bash (iTerm2 themes)
+- **Agendamento**: launchd (agentes macOS nativos)
+- **Hardware**: MacBook Air M3 (8GB RAM, ARM64)
+- **Sistema**: macOS com Zsh/Oh My Zsh
+- **Ferramentas**: Homebrew, Git, npm, Docker
 
-## Contexto do Ambiente
+### Funcionalidades Principais
 
-- **Hardware**: MacBook Air M3 com 8GB RAM (ARM64/Apple Silicon)
-- **Sistema**: macOS (Darwin) com Zsh/Oh My Zsh
-- **Shell**: Zsh como padrão
-- **Gerenciador de Pacotes**: Homebrew (`/opt/homebrew` para ARM64)
-- **Linguagem Preferida Python**: `uv` quando possível (conforme memória do usuário)
-- **Considerações Críticas**: Scripts devem ser eficientes em memória (limitação de 8GB RAM)
+1. **Limpeza Diária Automática** (2x/dia: 10h e 18h)
+   - Remove arquivos antigos de Downloads (>30 dias)
+   - Esvazia Lixeira (>7 dias)
+   - Limpa caches (navegadores, npm, Homebrew, Docker)
+   - Remove logs antigos (>14 dias)
 
-## Arquitetura e Estrutura
+2. **Sincronização de Dotfiles** (1x/dia: 20h)
+   - Backup automático para ~/dotfiles
+   - Validação de sintaxe antes de copiar
+   - Commit e push automático para Git
 
-### Estrutura de Diretórios (Planejada)
+3. **Gerenciamento de Agentes launchd**
+   - Instalação/desinstalação de agentes
+   - Monitoramento de status
+   - Reload de configurações
+
+## Estrutura do Projeto
 
 ```
 scripts_pessoais/
-├── scripts/           # Scripts principais de automação
-│   ├── cleanup/      # Scripts de limpeza diária
-│   └── dotfiles/     # Scripts para atualização de dotfiles
-├── launchd/          # Arquivos .plist para automação via launchd
-├── config/           # Arquivos de configuração
-└── docs/             # Documentação adicional
+├── scripts/
+│   ├── cleanup/
+│   │   └── daily-cleanup.sh       # Limpeza automática de sistema
+│   ├── dotfiles/
+│   │   └── sync-dotfiles.sh       # Sincronização de dotfiles
+│   └── install-agents.sh          # Gerenciador de agentes launchd
+├── launchd/                       # Arquivos .plist para agendamento
+│   ├── com.gabrielramos.cleanup.plist
+│   └── com.gabrielramos.dotfiles.plist
+├── install-iterm-themes.sh        # Instalador de temas iTerm2
+├── config/                        # Configurações
+├── docs/                          # Documentação
+│   └── SETUP.md                   # Guia de configuração
+└── .claude/                       # Configurações Claude Code
+    ├── settings.json              # Configurações base
+    ├── settings.local.json        # Permissões locais
+    └── commands/                  # Slash commands customizados
 ```
 
-### Automação com launchd
+## Convenções de Desenvolvimento
 
-Scripts de execução periódica devem usar `launchd` (não cron) no macOS:
+### Scripts Zsh
 
-- **Localização dos .plist**: `~/Library/LaunchAgents/` (usuário) ou `/Library/LaunchDaemons/` (sistema)
-- **Comandos úteis**:
-  ```bash
-  # Carregar agente
-  launchctl load ~/Library/LaunchAgents/com.user.script.plist
-
-  # Descarregar agente
-  launchctl unload ~/Library/LaunchAgents/com.user.script.plist
-
-  # Listar agentes ativos
-  launchctl list | grep com.user
-
-  # Ver status
-  launchctl list com.user.script
-  ```
-
-## Desenvolvimento de Scripts
-
-### Padrões Obrigatórios
-
-1. **Shebang**: Sempre usar `#!/bin/zsh` (shell padrão do macOS)
-2. **Permissões**: Executar `chmod +x script.sh` após criar
-3. **Compatibilidade**: Testar em ARM64 (Apple Silicon)
-4. **Comentários**: Em português, explicando lógica complexa
-5. **Nomes de variáveis**: Em inglês (padrão da indústria)
-
-### Template de Script Base
-
+#### Estrutura Padrão
 ```zsh
 #!/bin/zsh
 # ============================================================================
-# NOME_DO_SCRIPT.sh
-# Descrição: Breve descrição do que o script faz
+# nome-do-script.sh
+# Descrição: [Descrição breve e clara]
 # Autor: Gabriel Ramos
 # Criado em: YYYY-MM-DD
 # ============================================================================
 
-set -euo pipefail  # Fail fast em erros
+set -euo pipefail  # Fail fast: -e (exit on error), -u (undefined vars), -o pipefail
 
-# Configurações
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly LOG_FILE="$HOME/.local/logs/script.log"
+# CONFIGURAÇÕES
+readonly SCRIPT_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
+readonly LOG_DIR="$HOME/.local/logs"
+readonly LOG_FILE="$LOG_DIR/nome-do-script.log"
 
-# Funções
+# Criar diretório de logs
+mkdir -p "$LOG_DIR"
+
+# FUNÇÕES
 log() {
-  echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+  local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+  echo "[$timestamp] $*" | tee -a "$LOG_FILE"
 }
 
-# Script principal
+# MAIN
 main() {
   log "Iniciando script..."
-
-  # Sua lógica aqui
-
-  log "Script concluído com sucesso"
+  # Implementação aqui
+  log "Script finalizado com sucesso"
 }
 
-# Executar
 main "$@"
 ```
 
-### Checklist para Novos Scripts
+#### Boas Práticas
+- Use `set -euo pipefail` no início de todos os scripts
+- Declare constantes com `readonly`
+- Use `local` para variáveis de função
+- Adicione logs estruturados com timestamp
+- Valide pré-requisitos no início
+- Use nomes descritivos para variáveis e funções
+- Adicione comentários para lógica complexa
 
-- [ ] Shebang `#!/bin/zsh` incluído
-- [ ] `set -euo pipefail` para fail-fast
-- [ ] Logging adequado (timestamp + mensagem)
-- [ ] Tratamento de erros
-- [ ] Testado manualmente
-- [ ] Permissões de execução (`chmod +x`)
-- [ ] Documentação inline para lógica complexa
-- [ ] Verificação de dependências (comandos externos)
+### Agentes launchd
 
-### Considerações de Performance
+#### Estrutura de Arquivos .plist
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.gabrielramos.nome-do-agente</string>
 
-Devido à limitação de 8GB de RAM:
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>/caminho/completo/para/script.sh</string>
+    </array>
 
-1. **Evitar processos pesados simultâneos**
-2. **Usar `pgrep` antes de iniciar serviços**
-3. **Limpar variáveis grandes após uso** (`unset`)
-4. **Preferir ferramentas nativas do macOS**
-5. **Para Python, usar `uv` em vez de pip/venv quando possível**
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>10</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
 
-### Integração com Dotfiles
+    <key>WorkingDirectory</key>
+    <string>/Users/gabrielramos/scripts_pessoais</string>
 
-Scripts que modificam dotfiles devem:
+    <key>StandardOutPath</key>
+    <string>/Users/gabrielramos/.local/logs/nome-stdout.log</string>
 
-1. **Fazer backup antes de modificar**: `cp file{,.backup-$(date +%Y%m%d)}`
-2. **Usar git para rastreamento**: Commit após alterações bem-sucedidas
-3. **Validar sintaxe antes de aplicar**: `zsh -n ~/.zshrc` antes de substituir
-4. **Principais dotfiles**: `~/.zshrc`, `~/.gitconfig`, `~/.config/`
+    <key>StandardErrorPath</key>
+    <string>/Users/gabrielramos/.local/logs/nome-stderr.log</string>
 
-## Ferramentas e Comandos
+    <key>Nice</key>
+    <integer>10</integer>
 
-### Homebrew
-
-```bash
-# Instalar pacote
-brew install <package>
-
-# Atualizar tudo
-brew update && brew upgrade && brew cleanup
-
-# Verificar dependências
-brew deps --tree <package>
-
-# Homebrew em ARM64
-/opt/homebrew/bin/brew
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
 ```
 
-### Verificação de Sistema
+#### Convenções launchd
+- **Naming**: `com.gabrielramos.<nome-do-agente>.plist`
+- **Localização**: `launchd/` no repositório → `~/Library/LaunchAgents` quando instalado
+- **Logs separados**: stdout e stderr em arquivos diferentes
+- **Nice level**: 10 (baixa prioridade para não interferir no sistema)
+- **PATH**: Incluir Homebrew paths (`/opt/homebrew/bin` para Apple Silicon)
 
+### Logs e Monitoramento
+
+#### Diretório de Logs
+- **Localização**: `~/.local/logs/`
+- **Formato**: `<nome-do-script>.log` (stdout), `<nome-do-script>-stderr.log` (erros)
+
+#### Ver Logs
 ```bash
-# Arquitetura
-uname -m  # arm64 para M3
+# Logs em tempo real
+tail -f ~/.local/logs/daily-cleanup.log
+tail -f ~/.local/logs/sync-dotfiles.log
 
-# Versão do macOS
-sw_vers
+# Ver erros
+tail -f ~/.local/logs/cleanup-stderr.log
+tail -f ~/.local/logs/dotfiles-stderr.log
 
-# Processos de desenvolvimento
-checkapis  # Função customizada no ~/.zshrc (verifica APIs/processos rodando)
+# Últimas 50 linhas
+tail -50 ~/.local/logs/daily-cleanup.log
 ```
 
-### Python com uv
+## Testes e Validação
 
-Para projetos Python, SEMPRE preferir `uv`:
+### Antes de Agendar Scripts
 
+1. **Validar Sintaxe**
+   ```bash
+   zsh -n scripts/cleanup/daily-cleanup.sh
+   ```
+
+2. **Executar Manualmente**
+   ```bash
+   ./scripts/cleanup/daily-cleanup.sh
+   ```
+
+3. **Verificar Logs**
+   ```bash
+   tail -20 ~/.local/logs/daily-cleanup.log
+   ```
+
+4. **Testar Agentes launchd**
+   ```bash
+   # Instalar
+   ./scripts/install-agents.sh install
+
+   # Verificar status
+   ./scripts/install-agents.sh status
+   launchctl list | grep gabrielramos
+
+   # Ver logs recentes
+   tail ~/.local/logs/*-stderr.log
+   ```
+
+### Checklist de Validação
+
+Antes de fazer commit de novos scripts:
+- [ ] Sintaxe validada com `zsh -n`
+- [ ] Script executado manualmente com sucesso
+- [ ] Logs verificados (sem erros)
+- [ ] Permissões de execução configuradas (`chmod +x`)
+- [ ] Documentação atualizada no README.md
+- [ ] Arquivo .plist criado (se aplicável)
+- [ ] Agente testado com launchctl (se aplicável)
+
+## Considerações de Performance
+
+### Hardware Limitado (8GB RAM)
+- Evitar executar múltiplos processos pesados simultaneamente
+- Scripts devem ser leves e rápidos
+- Usar `nice` level adequado em agentes (10 = baixa prioridade)
+- Monitorar uso de memória em operações grandes
+
+### Otimizações Específicas
 ```bash
-# Inicializar projeto
-uv init
+# Limitar memória do Node.js se necessário
+export NODE_OPTIONS="--max-old-space-size=2048"
 
-# Adicionar dependência
-uv add <package>
+# Usar comandos nativos quando possível
+rm -rf dir/  # Mais rápido que find + rm
 
-# Executar script
-uv run script.py
-
-# Sincronizar ambiente
-uv sync
+# Evitar múltiplos pipes desnecessários
+awk '{ print $1 }' file.txt  # Melhor que cat file.txt | awk ...
 ```
 
-## Referências de Inspiração
+## Gerenciamento de Configuração
 
-- **Mole**: https://github.com/tw93/Mole.git (limpeza automática)
-  - Limpa caches, logs, downloads antigos
-  - Otimização de disco
-  - Execução periódica via launchd
+### Arquivos de Ambiente
+- **Não commitar**: Chaves de API, senhas, tokens
+- **Usar**: Variáveis de ambiente ou arquivos `.env` no `.gitignore`
+- **Documentar**: Criar `.env.example` com variáveis necessárias
 
-## Notas Importantes
+### Configurações do Usuário
+```bash
+# Criar diretórios de configuração
+mkdir -p ~/.config/cleanup
+mkdir -p ~/.config/dotfiles
 
-- **Git já está inicializado** com remoto: `https://github.com/prof-ramos/scripts_pessoais.git`
-- **Branch principal**: `main`
-- Scripts devem ser **idempotentes** quando possível (executar múltiplas vezes = mesmo resultado)
-- Preferir **logging** em vez de output direto para scripts automatizados
-- Considerar **notificações do macOS** para feedback ao usuário:
-  ```bash
-  osascript -e 'display notification "Mensagem" with title "Título"'
-  ```
+# Usar arquivos de configuração locais
+CONFIG_FILE="$HOME/.config/cleanup/config.sh"
+```
+
+## Comandos Úteis
+
+### Gerenciamento de Agentes
+```bash
+# Instalar todos os agentes
+./scripts/install-agents.sh install
+
+# Verificar status
+./scripts/install-agents.sh status
+
+# Recarregar configurações
+./scripts/install-agents.sh reload
+
+# Desinstalar
+./scripts/install-agents.sh uninstall
+
+# Listar agentes ativos
+launchctl list | grep gabrielramos
+```
+
+### Diagnóstico e Troubleshooting
+```bash
+# Espaço em disco
+df -h
+
+# Processos em execução
+ps aux | grep daily-cleanup
+
+# Verificar permissões
+ls -la scripts/cleanup/daily-cleanup.sh
+
+# Testar PATH do launchd
+launchctl getenv PATH
+
+# Ver logs de erro do sistema
+tail /var/log/system.log
+```
+
+### Limpeza Manual
+```bash
+# Executar limpeza agora
+./scripts/cleanup/daily-cleanup.sh
+
+# Executar sync de dotfiles agora
+./scripts/dotfiles/sync-dotfiles.sh
+
+# Limpar Docker manualmente
+docker system prune -af --volumes
+```
+
+## Git Workflow
+
+### Commits
+Este é um repositório pessoal, então:
+- Commits podem ser diretos na branch `main`
+- Use mensagens descritivas em português
+- Formato sugerido: `tipo: descrição`
+  - `feat:` nova funcionalidade
+  - `fix:` correção de bug
+  - `docs:` mudanças na documentação
+  - `refactor:` refatoração de código
+  - `chore:` tarefas de manutenção
+
+### Exemplo
+```bash
+git add scripts/cleanup/daily-cleanup.sh
+git commit -m "feat: adiciona limpeza de cache do npm"
+git push origin main
+```
+
+## Segurança
+
+### Informações Sensíveis
+- Nunca commitar tokens ou credenciais
+- Revisar scripts antes de compartilhar publicamente
+- Usar `~/.gitignore` para excluir logs e caches
+
+### Permissões de Arquivos
+```bash
+# Scripts executáveis
+chmod +x scripts/**/*.sh
+
+# Arquivos de configuração (somente leitura)
+chmod 644 launchd/*.plist
+chmod 644 config/*
+```
+
+### Validação de Input
+- Sempre validar paths antes de executar `rm -rf`
+- Verificar se diretórios existem antes de operar
+- Usar aspas em variáveis para evitar word splitting
+
+## Referências Rápidas
+
+### Slash Commands Disponíveis
+- `/test-script` - Validar e executar scripts manualmente
+- `/check-agents` - Verificar status dos agentes launchd
+- `/add-dotfile` - Adicionar novo arquivo ao sync de dotfiles
+
+### Documentação Adicional
+- **[README.md](README.md)** - Visão geral e início rápido
+- **[docs/SETUP.md](docs/SETUP.md)** - Guia detalhado de configuração
+- **[Mole](https://github.com/tw93/Mole.git)** - Inspiração original
+
+### Recursos Externos
+- [launchd.info](https://www.launchd.info/) - Guia de launchd
+- [Zsh Documentation](https://zsh.sourceforge.io/Doc/) - Manual Zsh
+- [Homebrew Docs](https://docs.brew.sh/) - Documentação Homebrew
+
+---
+
+**Última atualização:** 2025-11-01
+**Autor:** Gabriel Ramos
+**Hardware:** MacBook Air M3 (8GB RAM)
+**Sistema:** macOS com Zsh/Oh My Zsh

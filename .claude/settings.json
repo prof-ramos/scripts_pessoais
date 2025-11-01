@@ -1,0 +1,16 @@
+{
+  "modelSelection": {
+    "default": "haiku",
+    "planning": "sonnet"
+  },
+  "hooks": {
+    "pre_tool_use": {
+      "Edit": "zsh -n {file_path} 2>&1 || true",
+      "Write": "zsh -n {file_path} 2>&1 || true"
+    }
+  },
+  "budget": {
+    "token_limit": 200000,
+    "warning_threshold": 150000
+  }
+}
